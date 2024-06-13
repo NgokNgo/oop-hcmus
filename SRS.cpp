@@ -75,6 +75,7 @@ public:
   }
   void enroll(Student *student);
   void drop(Student *student);
+  void postGrade(Student *student, string grade);
 };
 
 class Course{
@@ -97,7 +98,11 @@ public:
     setCourseName(courseName);
     setCredits(credits);
   }
-
+  ~Course(){
+    for(auto section : sections){
+      delete section.second;
+    }
+  }
   void showInfo(){
     cout << "Course No: " << getCourseNo() << endl;
     cout << "Course Name: " << getCourseName() << endl;
@@ -109,12 +114,17 @@ public:
     }
   }
 
-  void setPrerequisites(Course *course){
+  void addPrerequisites(Course *course){
     prerequisites[course->getCourseNo()] = course;
   }
-  void offerSection(Section *section){
+  void addSection(Section *section){
     sections[section->getSectionNo()] = section;
+  }
+  Section *scheduleSection(char dayOfWeek, string timeOfDay, string semester, string room, int seatingCapacity){
+    Section *section = new Section(this->getCourseName() + semester, dayOfWeek, timeOfDay, semester, room, seatingCapacity);
     section->setCourse(this);
+    this->addSection(section);
+    return section;
   } 
 };
 
@@ -137,14 +147,14 @@ public:
 class TransciptEntry{
 private:
   string grade;
-  Student *student;
   Section *section;
   Transcipt *transcipt;
 public:
   void setGrade(string grade){this->grade = grade;}
   string getGrade(){return grade;}
   TransciptEntry(){}
-  TransciptEntry(string grade, Student *student, Section *section){
+  TransciptEntry(string grade, Section *s){
+    this->section = s;
     setGrade(grade);
   }
 
@@ -156,26 +166,60 @@ public:
   }
 };
 
+class Transcipt{
+private:
+  Student *student;
+  map<string, TransciptEntry*> entries;
+public:
+    Transcipt(Student *student){ this->student = student; }
+  ~Transcipt(){
+    for(auto entry : entries){
+      delete entry.second;
+    }
+  }
+
+  void display();
+
+  void addEntry(Course *course, string grade){
+    TransciptEntry *entry = new TransciptEntry;
+    entry->setGrade(grade);
+    entries[course->getCourseNo()] = entry;
+  }
+  
+  void checkPass(Course *course){
+    if(entries[course->getCourseNo()]->pass()){
+      cout << "Course " << course->getCourseNo() << " passed" << endl;
+    }
+    else{
+      cout << "Course " << course->getCourseNo() << " failed" << endl;
+    }
+  }
+};
+
 class Student : public Person{
 private:
   string major;
   string degree;
   Professor *advisor;
   PlanOfStudy *plan;
+  Transcipt *transcipt;
   map <string, Section*> sections;
 public:
   void setMajor(string major){this->major = major;}
   string getMajor(){return major;}
   void setDegree(string degree){this->degree = degree;}
   string getDegree(){return degree;}
+  Transcipt *getTranscipt(){return transcipt;}
 
   Student(string ssn, string name, string major, string degree) : Person(ssn, name){
     setMajor(major);
     setDegree(degree);
     plan = new PlanOfStudy;
+    transcipt = new Transcipt(this);
   }
   ~Student(){
     delete plan;
+    delete transcipt;
   }
 
   void display(){
@@ -185,9 +229,6 @@ public:
     cout << "Degree: " << getDegree() << endl;
     cout << endl;
   }
-  void displayPlanOfStudy(){
-    this->plan->display();
-  }
 
   void setAdvisor(Professor *professor){
     this->advisor = professor;
@@ -195,68 +236,17 @@ public:
   void addCourse(Course *course){
     this->plan->addCourse(course);
   }
+  void displayPlanOfStudy(){
+    this->plan->display();
+  }
   void addSection(Section *section){
     sections[section->getSectionNo()] = section;
-    section->enroll(this);
   }
   void dropSection(Section *section){
     sections.erase(section->getSectionNo());
-    section->drop(this);
   }
-};
-
-void Section::enroll(Student *student){
-  if(students.size() < seatingCapacity){
-    students[student->getSsn()] = student;
-    cout << "Enroll success" << endl;
-  }
-  else{
-    waitlist[student->getSsn()] = student;
-    cout << "Section is full, student is now on waitlist" << endl;
-  }
-}
-  
-void Section::drop(Student *student){
-  students.erase(student->getSsn());
-  cout << "Student dropped" << endl;
-}
-
-class Transcipt{
-private:
-  Student *student;
-  map<string, TransciptEntry*> entries;
-public:
-  ~Transcipt(){
-    for(auto entry : entries){
-      delete entry.second;
-    }
-  }
-
-  void display(){
-    cout << "Transcipt for student: " << student->getName() << endl;
-    for(auto entry : entries){
-      cout << "Course No: " << entry.first << endl;
-      cout << "Grade: " << entry.second->getGrade() << endl;
-    }
-  }
-
-  void addEntry(Course *course, string grade){
-    TransciptEntry *entry = new TransciptEntry;
-    entry->setGrade(grade);
-    entries[course->getCourseNo()] = entry;
-  }
-
-  void setStudent(Student *student){
-    this->student = student;
-  }
-  
   void verifyCompletion(Course *course){
-    if(entries[course->getCourseNo()]->pass()){
-      cout << "Course " << course->getCourseNo() << " passed" << endl;
-    }
-    else{
-      cout << "Course " << course->getCourseNo() << " failed" << endl;
-    }
+    this->transcipt->checkPass(course);
   }
 };
 
@@ -300,6 +290,37 @@ public:
   }
 };
 
+void Transcipt::display(){
+  cout << "Transcipt of student: " << student->getName() << endl;
+  for(auto entry : entries){
+    cout << "Course: " << entry.first << " | Grade: " << entry.second->getGrade() << endl;
+  }
+}
+
+void Section::enroll(Student *student){
+  if(students.size() < seatingCapacity){
+    students[student->getSsn()] = student;
+    student->addSection(this);
+    cout << "Enroll success" << endl;
+  }
+  else{
+    waitlist[student->getSsn()] = student;
+    student->dropSection(this);
+    cout << "Section is full, student is now on waitlist" << endl;
+  }
+}
+  
+void Section::drop(Student *student){
+  students.erase(student->getSsn());
+  cout << "Student dropped" << endl;
+}
+
+void Section::postGrade(Student *student, string grade){
+  if(students.find(student->getSsn()) != students.end()){
+    student->getTranscipt()->addEntry(course, grade);
+  }
+}
+
 int main(){
   Student student("1", "An", "Computer Science", "BS");
   Student student2("2", "Manh", "Computer Science", "BS");
@@ -312,21 +333,13 @@ int main(){
   student2.addCourse(&course);
   // student2.displayPlanOfStudy();
 
-  Section section("CS101-1", 'M', "8:00-9:00", "Fall", "A1", 100);
-  professor.teach(&section);
+  Section *section = course.scheduleSection('M', "8:00-9:00", "Fall", "A1", 100);
+  professor.teach(section);
   // professor.showSections();
-  course.offerSection(&section);
-  // course.showSections();
-  // student2.addSection(&section);
-  // student2.dropSection(&section);
+  section->enroll(&student2);
 
-  Transcipt transcipt;
-  transcipt.setStudent(&student2);
-  transcipt.addEntry(&course, "A");
-  transcipt.addEntry(&course2, "E");
-  transcipt.display();
-  transcipt.verifyCompletion(&course);
-  transcipt.verifyCompletion(&course2);
-
+  section->postGrade(&student2, "A");
+  student2.getTranscipt()->display();
+  student2.verifyCompletion(&course);
   return 0;
 }
