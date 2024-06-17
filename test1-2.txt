@@ -1,0 +1,30 @@
+#Test 1
+Mỗi phòng học (Room) có các thông tin gồm mã số (room number) và sức chứa (seating capacity). Giảng viên (Instructor) có thể sử dụng nhiều phòng học để dạy nhiều môn khác nhau. Giảng viên có thông tin là tên (name). Phòng học chỉ có được sử dụng (book) cho duy nhất một giảng viên.
+
+Chương trình chính sẽ thực hiện các thao tác sau:
+
+- Tạo 2 giảng viên và 3 phòng học.
+
+- Cho giảng viên đầu tiên sử dụng 2 phòng học và giảng viên thứ 2 sử dụng phòng học còn lại.
+
+- Sau đó, cho giảng viên đầu tiên trả lại 1 phòng học. Và lấy phòng học đó cho giảng viên thứ 2 sử dụng.
+
+- Hiển thị thông tin của từng giảng viên và các phòng học mà các giảng viên đó đang sử dụng.
+
+#Test 2
+Một bệnh viện bao gồm nhiều khoa. Mỗi khoa có một tên riêng.
+
+Mỗi khoa có nhiều bệnh nhân. Bệnh nhân có các thông tin về tên, ngày sinh. Bệnh nhân chỉ ở trong một khoa duy nhất.
+
+Các bác sĩ trong bệnh viện được tổ chức theo nhóm. Mỗi bác sĩ chỉ ở trong một nhóm. Mỗi nhóm có một mã nhóm duy nhất. Mỗi nhóm được lãnh đạo bởi một bác sĩ (cố vấn) duy nhất. Bác sĩ có các thông tin về tên, địa chỉ.
+
+Mỗi bệnh nhân khi nhập bệnh viện được điều trị bởi một nhóm bác sĩ duy nhất. Bác sĩ cố vấn của nhóm đó chịu trách nhiệm về bệnh nhân.
+
+Chương trình cần quản lý các thông tin sau:
+
+- Các khoa.
+
+- Các bác sĩ, và nhóm của bác sĩ đó.
+
+- Bệnh nhân và phòng bệnh của bệnh nhân khi nhập viện. Hiển thị thông tin bác sĩ tư vấn chịu trách nhiệm cho bệnh nhân đó. Hiển thị nhóm bác sĩ đang điều trị cho bệnh nhân.
+
