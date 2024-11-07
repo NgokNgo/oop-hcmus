@@ -24,7 +24,7 @@ public class Main {
         student.displayPlanOfStudy();
 
         System.out.println("============================");
-        ScheduleOfClasses sem1 = new ScheduleOfClasses("I/24-25");
+        ScheduleOfClasses sem1 = new ScheduleOfClasses("24-25/I");
         sem1.addSection(dsa, "A", "Mon", "9:00-11:00", "A101", 50);
         sem1.addSection(oop, "A", "Tue", "9:00-11:00", "A102", 50);
         sem1.addSection(oop, "B", "Wed", "9:00-11:00", "A103", 50);
