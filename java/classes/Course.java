@@ -7,12 +7,15 @@ public class Course {
     private String courseNo;
     private String courseName;
     private int credit;
-    private List<Course> prerequisities = new ArrayList<Course>();
+    private List<Course> prerequisities;
+    private List<Section> sections;
 
     public Course(String courseNo, String courseName, int credit) {
         this.setCourseNo(courseNo);
         this.setCourseName(courseName);
         this.setCredit(credit);
+        this.prerequisities = new ArrayList<Course>();
+        this.sections = new ArrayList<Section>();
     }
 
     //getter setter
@@ -73,5 +76,32 @@ public class Course {
 
     public void removePrerequisity(Course course) {
         this.prerequisities.remove(course);
+    }
+
+    public void scheduleSection(String sectionNo, String dayOfWeek, String timeOfDay, String room, int seatingCapacity) {
+        Section section = new Section(sectionNo, dayOfWeek, timeOfDay, room, seatingCapacity);
+        section.setCourse(this);
+        this.addSection(section);
+    }
+
+    public List<Section> getSections() {
+        return this.sections;
+    }
+
+    public void addSection(Section section) {
+        if(this.sections.contains(section) || section == null){
+            System.out.println("Can not add section to the course because it is already in the plan of study or it is null.");
+            return;
+        }
+        this.sections.add(section);
+    }
+
+    public void removeSection(Section section) {
+        if(!this.sections.contains(section)){
+            System.out.println("Can not remove section from the course because it is not in the plan of study.");
+            return;
+        }
+        this.sections.remove(section);
+        section.setCourse(null);
     }
 }

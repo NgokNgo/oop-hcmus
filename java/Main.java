@@ -1,6 +1,7 @@
 package oop.java;
 
 import oop.java.classes.Professor;
+import oop.java.classes.ScheduleOfClasses;
 import oop.java.classes.Student;
 import oop.java.classes.Course;
 import oop.java.classes.PlanOfStudy;
@@ -21,6 +22,13 @@ public class Main {
 
         System.out.println("============================");
         student.displayPlanOfStudy();
+
+        System.out.println("============================");
+        ScheduleOfClasses sem1 = new ScheduleOfClasses("I/24-25");
+        sem1.addSection(dsa, "A", "Mon", "9:00-11:00", "A101", 50);
+        sem1.addSection(oop, "A", "Tue", "9:00-11:00", "A102", 50);
+        sem1.addSection(oop, "B", "Wed", "9:00-11:00", "A103", 50);
+        sem1.display();
 
     }
 }
