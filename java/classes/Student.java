@@ -1,16 +1,23 @@
 package oop.java.classes;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class Student extends Person {
     private String major;
     private String degree;
     private Professor advisor;
     private PlanOfStudy planOfStudy;
+    private List<Section> sections;
+    private Transcript transcript;
 
     public Student(String ssn, String name, String major, String degree) {
         super(ssn, name);
         this.setmajor(major);
         this.setdegree(degree);
         this.planOfStudy = new PlanOfStudy();
+        this.sections = new ArrayList<Section>();
+        this.transcript = new Transcript(this);
     }
 
     //getter setter
@@ -38,6 +45,10 @@ public class Student extends Person {
         return this.advisor;
     }
 
+    public Transcript getTranscript() {
+        return this.transcript;
+    }
+
     //others
     public void display() {
         super.display();
@@ -60,5 +71,23 @@ public class Student extends Person {
 
     public void displayPlanOfStudy() {
         this.planOfStudy.displayCourses();
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
+
+    public void dropSection(Section section) {
+        this.sections.remove(section);
+    }
+
+    public void displaySections() {
+        for (Section section : this.sections) {
+            section.display();
+        }
+    }
+
+    public void displayTranscript(){
+        this.transcript.display();
     }
 }

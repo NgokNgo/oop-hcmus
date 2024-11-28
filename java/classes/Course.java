@@ -43,7 +43,49 @@ public class Course {
         return this.credit;
     }
 
+    public List<Course> getPrerequisities() {
+        return this.prerequisities;
+    }
+
+    public List<Section> getSections() {
+        return this.sections;
+    }
+
     //others
+    public void addPrerequisity(Course course) {
+        if(this.prerequisities.contains(course) || course == null){
+            System.out.println("Can not add prerequisity to the course because it is already in prequisities list or it is null.");
+            return;
+        }
+        this.prerequisities.add(course);
+    }
+
+    public void removePrerequisity(Course course) {
+        this.prerequisities.remove(course);
+    }
+
+    public void scheduleSection(Section section) {
+        section.setCourse(this);
+        this.addSection(section);
+    }
+
+    public void addSection(Section section) {
+        if(this.sections.contains(section)){
+            System.out.println("Can not add section to the course because it is already in the sections list.");
+            return;
+        }
+        this.sections.add(section);
+    }
+
+    public void removeSection(Section section) {
+        if(!this.sections.contains(section)){
+            System.out.println("Can not remove section from the course because it is not in the sections list.");
+            return;
+        }
+        this.sections.remove(section);
+        section.setCourse(null);
+    }
+    
     public void display(){
         System.out.println("Course No: " + getCourseNo());
         System.out.println("Course Name: " + getCourseName());
@@ -62,46 +104,15 @@ public class Course {
         }
     }
 
-    public void addPrerequisity(Course course) {
-        if(this.prerequisities.contains(course) || course == null){
-            System.out.println("Can not add prerequisity to the course because it is already in the plan of study or it is null.");
+    public void displaySections() {
+        System.out.println("Sections:");
+        if (this.sections.isEmpty()) {
+            System.out.println("No sections.");
             return;
         }
-        this.prerequisities.add(course);
-    }
-
-    public List<Course> getPrerequisities() {
-        return this.prerequisities;
-    }
-
-    public void removePrerequisity(Course course) {
-        this.prerequisities.remove(course);
-    }
-
-    public void scheduleSection(String sectionNo, String dayOfWeek, String timeOfDay, String room, int seatingCapacity) {
-        Section section = new Section(sectionNo, dayOfWeek, timeOfDay, room, seatingCapacity);
-        section.setCourse(this);
-        this.addSection(section);
-    }
-
-    public List<Section> getSections() {
-        return this.sections;
-    }
-
-    public void addSection(Section section) {
-        if(this.sections.contains(section) || section == null){
-            System.out.println("Can not add section to the course because it is already in the plan of study or it is null.");
-            return;
+        for (Section section : getSections()) {
+            System.out.println(section.getSectionNo() + " " + section.getDayOfWeek() + " " + section.getTimeOfDay() + " " + section.getRoom() + " " + section.getSeatingCapacity());
         }
-        this.sections.add(section);
     }
 
-    public void removeSection(Section section) {
-        if(!this.sections.contains(section)){
-            System.out.println("Can not remove section from the course because it is not in the plan of study.");
-            return;
-        }
-        this.sections.remove(section);
-        section.setCourse(null);
-    }
 }
